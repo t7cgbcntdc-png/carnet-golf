@@ -1,0 +1,1048 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Carnet de golf</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Golf">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#FAFAF6">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-180.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#FAFAF6; --card:#FFFFFF; --ink:#1B2A3A; --muted:#5C6B78; --grid:#D3D9DE;
+  --flag:#E5B21E; --off:#23704E; --mix:#2C5FA8; --train:#A3592A; --under:#B83A2B; --danger:#A3261B;
+  --sheet:#FFFFFF; --shade:rgba(20,30,40,.45);
+  color-scheme: light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#121A22; --card:#1A2430; --ink:#E7ECF0; --muted:#9AA8B4; --grid:#33404D;
+    --flag:#F0C445; --off:#4FBF8A; --mix:#6E9EE8; --train:#E08A55; --under:#F07462; --danger:#F07462;
+    --sheet:#18212C; --shade:rgba(0,0,0,.6);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#121A22; --card:#1A2430; --ink:#E7ECF0; --muted:#9AA8B4; --grid:#33404D;
+  --flag:#F0C445; --off:#4FBF8A; --mix:#6E9EE8; --train:#E08A55; --under:#F07462; --danger:#F07462;
+  --sheet:#18212C; --shade:rgba(0,0,0,.6);
+  color-scheme: dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+html,body{margin:0;background:var(--paper);color:var(--ink)}
+body{font-family:"Barlow",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:16px;line-height:1.45;min-height:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+.num,h1,h2,.big{font-family:"Barlow Condensed","Arial Narrow",system-ui,sans-serif}
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);display:flex;align-items:baseline;justify-content:space-between;padding:14px 18px 10px;border-bottom:2px solid var(--ink)}
+header.top h1{margin:0;font-size:26px;font-weight:700;letter-spacing:.01em}
+header.top .flagmark{display:inline-block;width:10px;height:14px;background:var(--flag);margin-right:8px;clip-path:polygon(0 0,100% 30%,0 60%)}
+#sync{font-size:13px;color:var(--muted)}
+main{max-width:640px;margin:0 auto;padding:16px 16px 110px}
+h2{font-size:22px;margin:22px 0 10px;font-weight:600}
+h2:first-child{margin-top:4px}
+p{margin:6px 0}
+.muted{color:var(--muted)}
+.small{font-size:14px}
+nav.tabs{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--card);border-top:1px solid var(--grid);display:grid;grid-template-columns:repeat(5,1fr);padding-bottom:env(safe-area-inset-bottom,0px)}
+nav.tabs a{color:var(--muted);text-decoration:none;text-align:center;padding:10px 2px 12px;font-size:13px;font-weight:600;border-top:3px solid transparent}
+nav.tabs a[aria-current="page"]{color:var(--ink);border-top-color:var(--flag)}
+nav.tabs a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid var(--flag);outline-offset:2px}
+button{font:inherit;color:inherit;cursor:pointer}
+.btn{background:var(--ink);color:var(--paper);border:0;border-radius:8px;padding:11px 16px;font-weight:600}
+.btn.ghost{background:transparent;color:var(--ink);border:1.5px solid var(--ink)}
+.btn.danger{background:transparent;color:var(--danger);border:1.5px solid var(--danger)}
+.btn.block{width:100%}
+.row{display:flex;gap:10px;align-items:center}
+.row.wrap{flex-wrap:wrap}
+.spacer{flex:1}
+
+/* Index summary */
+.indexes{display:grid;grid-template-columns:repeat(3,1fr);border:2px solid var(--ink);border-radius:6px;overflow:hidden;background:var(--card)}
+.indexes > div{padding:12px 10px 10px;border-right:1px solid var(--grid)}
+.indexes > div:last-child{border-right:0}
+.indexes .lab{font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px}
+.indexes .big{font-size:40px;font-weight:700;line-height:1.05;margin-top:2px}
+.indexes .sub{font-size:12px;color:var(--muted)}
+.dot{width:10px;height:10px;border-radius:50%;display:inline-block;flex:none}
+.declared{margin-top:10px;font-size:14px}
+.chartbox{background:var(--card);border:1px solid var(--grid);border-radius:6px;padding:10px 6px 4px;margin-top:14px}
+.chartbox svg{display:block;width:100%;height:auto}
+.legend{display:flex;gap:6px;flex-wrap:wrap;padding:6px 6px 8px}
+.legend button{border:1.5px solid var(--grid);background:transparent;border-radius:999px;padding:4px 10px;font-size:13px;display:flex;align-items:center;gap:6px}
+.legend button[aria-pressed="false"]{opacity:.45}
+.seg{display:flex;border:1.5px solid var(--ink);border-radius:8px;overflow:hidden}
+.seg button{flex:1;background:transparent;border:0;padding:9px 6px;font-weight:600;font-size:14px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.seg button + button{border-left:1.5px solid var(--ink)}
+
+/* scorecard-like tables */
+.tablewrap{overflow-x:auto;border:1px solid var(--grid);border-radius:6px;background:var(--card)}
+table{border-collapse:collapse;width:100%;font-size:14px}
+th,td{padding:7px 8px;border-bottom:1px solid var(--grid);text-align:left;white-space:nowrap}
+th{font-weight:600;color:var(--muted);font-size:12.5px}
+td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+tr.counts td{background:color-mix(in srgb,var(--flag) 16%,transparent)}
+.tag{display:inline-block;font-size:12px;font-weight:600;padding:1px 7px;border-radius:4px;border:1px solid currentColor}
+.tag.comp{color:var(--off)} .tag.train{color:var(--train)}
+.flagtxt{font-size:11.5px;color:var(--under);font-weight:600}
+
+/* list */
+.list{display:flex;flex-direction:column;gap:8px}
+.item{background:var(--card);border:1px solid var(--grid);border-radius:6px;padding:11px 12px;display:flex;gap:12px;align-items:center;text-align:left;width:100%}
+.item .main{flex:1;min-width:0}
+.item .t{font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .s{font-size:13px;color:var(--muted)}
+.item .score{font-family:"Barlow Condensed",sans-serif;font-size:28px;font-weight:700;min-width:44px;text-align:right}
+.empty{border:1.5px dashed var(--grid);border-radius:8px;padding:20px;text-align:center;color:var(--muted)}
+.fab{position:fixed;right:18px;bottom:calc(76px + env(safe-area-inset-bottom,0px));z-index:6;background:var(--flag);color:#1B2A3A;border:0;border-radius:999px;padding:14px 20px;font-weight:700;box-shadow:0 2px 8px rgba(0,0,0,.25)}
+
+.voice{display:flex;gap:8px;margin-top:10px}
+.voice input{margin-top:0;flex:1;min-width:0}
+/* stats */
+.stats{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.stat{background:var(--card);border:1px solid var(--grid);border-radius:6px;padding:10px 12px}
+.stat .v{font-family:"Barlow Condensed",sans-serif;font-size:30px;font-weight:700;line-height:1.1}
+.stat .k{font-size:13px;color:var(--muted)}
+
+/* forms */
+label.f{display:block;margin:12px 0 0;font-size:14px;font-weight:600}
+input[type=text],input[type=number],input[type=date],select{width:100%;margin-top:4px;padding:10px 11px;border:1.5px solid var(--grid);border-radius:8px;background:var(--card);color:var(--ink);font:inherit}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.holes-edit{display:grid;grid-template-columns:auto 1fr 1fr;gap:6px 10px;align-items:center;margin-top:8px}
+.holes-edit input{margin-top:0;padding:8px}
+.holes-edit .h{font-family:"Barlow Condensed",sans-serif;font-weight:700;font-size:18px;text-align:center;min-width:28px}
+.err{color:var(--danger);font-size:14px;font-weight:600;margin-top:10px}
+.note{font-size:14px;color:var(--muted);border-left:3px solid var(--flag);padding:4px 0 4px 10px;margin:12px 0}
+
+/* sheet */
+.sheet-shade{position:fixed;inset:0;background:var(--shade);z-index:20;display:none}
+.sheet-shade.open{display:block}
+.sheet{position:fixed;left:0;right:0;bottom:0;top:calc(env(safe-area-inset-top,0px) + 24px);z-index:21;background:var(--sheet);border-radius:14px 14px 0 0;display:none;flex-direction:column;max-width:640px;margin:0 auto}
+.sheet.open{display:flex}
+.sheet .sh{display:flex;align-items:center;gap:10px;padding:14px 16px 10px;border-bottom:1px solid var(--grid)}
+.sheet .sh h3{margin:0;font-family:"Barlow Condensed",sans-serif;font-size:22px;flex:1}
+.sheet .sb{overflow-y:auto;padding:6px 16px calc(24px + env(safe-area-inset-bottom,0px));flex:1}
+.x{background:transparent;border:0;font-size:15px;font-weight:600;color:var(--muted);padding:6px}
+
+/* hole entry */
+.holecard{border:2px solid var(--ink);border-radius:8px;padding:12px;margin-top:12px;background:var(--card)}
+.holehead{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px}
+.holehead .hn{font-family:"Barlow Condensed",sans-serif;font-size:34px;font-weight:700}
+.holehead .hp{color:var(--muted);font-size:15px}
+.stepper{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+.stepper .sl{font-weight:600}
+.stepper .ctl{display:flex;align-items:center;gap:6px}
+.stepper button{width:44px;height:44px;border-radius:8px;border:1.5px solid var(--ink);background:transparent;font-size:22px;font-weight:600;line-height:1}
+.stepper .val{font-family:"Barlow Condensed",sans-serif;font-size:32px;font-weight:700;min-width:46px;text-align:center}
+.fw{display:flex;gap:6px;margin-top:4px}
+.fw button{flex:1;border:1.5px solid var(--grid);background:transparent;border-radius:8px;padding:8px 4px;font-weight:600;font-size:14px}
+.fw button[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--paper)}
+.strip{display:grid;grid-template-columns:repeat(9,1fr);gap:3px;margin-top:12px}
+.strip button{border:1px solid var(--grid);background:var(--card);border-radius:4px;padding:3px 0 2px;font-size:11px;line-height:1.1;color:var(--muted)}
+.strip button b{display:block;font-family:"Barlow Condensed",sans-serif;font-size:17px;color:var(--ink)}
+.strip button .sp{display:block;font-size:10px;color:var(--muted);margin-top:1px}
+.strip button[aria-current="true"]{border:2px solid var(--flag)}
+.strip button.under b{color:var(--under)}
+.scorecard td.c{text-align:center} .scorecard th.c{text-align:center}
+.sc-under{color:var(--under);font-weight:700}
+details{margin-top:10px} summary{cursor:pointer;font-weight:600}
+@media (prefers-reduced-motion: no-preference){ .sheet.open{animation:up .18s ease-out} @keyframes up{from{transform:translateY(24px);opacity:.6}to{transform:none;opacity:1}} }
+</style>
+</head>
+<body>
+<header class="top">
+  <h1><span class="flagmark" aria-hidden="true"></span>Carnet de golf</h1>
+  <span id="sync">Chargement…</span>
+</header>
+<main id="view"><p class="muted">Chargement de vos données…</p></main>
+<nav class="tabs" aria-label="Sections">
+  <a href="#index" data-r="index">Index</a>
+  <a href="#parties" data-r="parties">Parties</a>
+  <a href="#parcours" data-r="parcours">Parcours</a>
+  <a href="#stats" data-r="stats">Stats</a>
+  <a href="#reglages" data-r="reglages">Réglages</a>
+</nav>
+<div class="sheet-shade" id="shade"></div>
+<section class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <div class="sh"><h3 id="sheetTitle"></h3><button class="x" id="sheetClose">Fermer</button></div>
+  <div class="sb" id="sheetBody"></div>
+</section>
+
+<script>
+"use strict";
+/* ---------- état ---------- */
+const S = { courses: [], rounds: [], settings: { officialHI: null } };
+const LKEY = "carnet-golf-v1";
+const COLORS = { off: "var(--off)", mix: "var(--mix)", train: "var(--train)" };
+const SERIES = [
+  { key: "off", label: "Officiel", desc: "compétitions" , filter: r => r.type === "comp" },
+  { key: "mix", label: "Hypothétique", desc: "compét. + entraîn.", filter: r => true },
+  { key: "train", label: "Entraînement", desc: "entraîn. seuls", filter: r => r.type === "train" }
+];
+let chartOn = { off: true, mix: true, train: true };
+let indexSeries = "off";
+let statFilter = "all";
+// Golf de Pierpont, Grand Pierpont : carte de score 2025 (par, index des trous) et table WHS du club (14/03/2024)
+const PIERPONT = {
+  name: "Golf de Pierpont – Grand Pierpont",
+  par: [4,5,4,3,4,5,4,4,3,4,5,4,3,4,3,4,5,4],
+  si: [11,15,9,17,3,13,5,1,7,8,14,6,10,4,18,12,16,2],
+  tees: [
+    { k: "wh-m", tee: "Blanc – messieurs", cr: 74.0, slope: 129, f: [37.3, 128], b: [36.7, 129] },
+    { k: "ye-m", tee: "Jaune – messieurs", cr: 71.2, slope: 125, f: [36.0, 127], b: [35.2, 122] },
+    { k: "ye-l", tee: "Jaune – dames", cr: 77.8, slope: 135, f: [39.1, 137], b: [38.7, 133] },
+    { k: "bl-m", tee: "Bleu – messieurs", cr: 68.7, slope: 123, f: [34.6, 123], b: [34.1, 122] },
+    { k: "bl-l", tee: "Bleu – dames", cr: 74.4, slope: 130, f: [37.5, 131], b: [36.9, 128] },
+    { k: "re-m", tee: "Rouge – messieurs", cr: 66.3, slope: 112, f: [33.3, 112], b: [33.0, 112] },
+    { k: "re-l", tee: "Rouge – dames", cr: 71.4, slope: 123, f: [35.8, 126], b: [35.6, 120] },
+    { k: "or-m", tee: "Orange – messieurs", cr: 63.4, slope: 107, f: [31.8, 109], b: [31.6, 105] },
+    { k: "or-l", tee: "Orange – dames", cr: 67.9, slope: 115, f: [34.1, 118], b: [33.8, 112] }
+  ]
+};
+
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[c]));
+const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+const clone = o => JSON.parse(JSON.stringify(o));
+const r1 = x => Math.round(x * 10) / 10;
+const fmt1 = x => (x == null || isNaN(x)) ? "–" : (x < 0 ? "+" + Math.abs(x).toFixed(1) : x.toFixed(1));
+const fmtDiff = x => (x == null || isNaN(x)) ? "–" : x.toFixed(1);
+const fmtDate = d => { if (!d) return ""; const [y, m, j] = d.split("-"); return `${j}/${m}/${y}`; };
+const todayISO = () => { const d = new Date(); d.setMinutes(d.getMinutes() - d.getTimezoneOffset()); return d.toISOString().slice(0, 10); };
+const courseById = id => S.courses.find(c => c.id === id);
+const sum = a => a.reduce((x, y) => x + y, 0);
+
+/* ---------- stockage ---------- */
+const Store = {
+  mode: "local", base: null,
+  async init() {
+    // Version autonome : les données restent sur cet appareil (stockage du navigateur)
+    this.mode = "local";
+    try { if (navigator.storage && navigator.storage.persist) this.persisted = await navigator.storage.persist(); } catch (e) {}
+    await this.load();
+  },
+  async load() {
+    if (this.mode === "db") {
+      try {
+        const timeout = new Promise((_, rej) => setTimeout(() => rej(new Error("timeout")), 10000));
+        const [cs, rs, st] = await Promise.race([Promise.all([
+          this.base.collection("courses").get(),
+          this.base.collection("rounds").get(),
+          this.base.get()
+        ]), timeout]);
+        S.courses = cs.docs.filter(d => d.exists).map(d => clone(d.data()));
+        S.rounds = rs.docs.filter(d => d.exists).map(d => clone(d.data()));
+        S.settings = st.exists ? Object.assign({ officialHI: null }, clone(st.data())) : { officialHI: null };
+        return;
+      } catch (e) {
+        this.mode = "local"; this.loadError = true;
+      }
+    }
+    try {
+      const raw = localStorage.getItem(LKEY);
+      if (raw) { const d = JSON.parse(raw); S.courses = d.courses || []; S.rounds = d.rounds || []; S.settings = d.settings || { officialHI: null }; }
+    } catch (e) {}
+  },
+  saveLocal() { try { localStorage.setItem(LKEY, JSON.stringify(S)); } catch (e) {} },
+  async put(kind, obj) {
+    if (this.mode === "db") await this.base.collection(kind).doc(obj.id).set(clone(obj));
+    else this.saveLocal();
+  },
+  async del(kind, id) {
+    if (this.mode === "db") await this.base.collection(kind).doc(id).delete();
+    else this.saveLocal();
+  },
+  async putSettings() {
+    if (this.mode === "db") await this.base.set(clone(S.settings));
+    else this.saveLocal();
+  }
+};
+async function safe(fn, okMsg) {
+  try { await fn(); if (okMsg) flash(okMsg); return true; }
+  catch (e) { flash("Enregistrement impossible pour le moment. Vérifiez la connexion puis réessayez."); return false; }
+}
+let flashT;
+function flash(msg) { const el = $("#sync"); el.textContent = msg; clearTimeout(flashT); flashT = setTimeout(setSync, 3500); }
+function setSync() { $("#sync").textContent = Store.mode === "db" ? "Enregistré dans votre compte" : "Enregistré sur cet appareil"; }
+
+/* ---------- calcul WHS ---------- */
+// Table officielle (Règle 5.2a) : nombre de différentiels -> [nombre retenu, ajustement]
+function tableFor(n) {
+  if (n < 3) return null;
+  if (n === 3) return [1, -2]; if (n === 4) return [1, -1]; if (n === 5) return [1, 0];
+  if (n === 6) return [2, -1]; if (n <= 8) return [2, 0]; if (n <= 11) return [3, 0];
+  if (n <= 14) return [4, 0]; if (n <= 16) return [5, 0]; if (n <= 18) return [6, 0];
+  if (n === 19) return [7, 0]; return [8, 0];
+}
+// Course Handicap (Règle 6.1, révision 2024) : HI × Slope/113 + (CR − Par), arrondi à l’entier
+function courseHandicap(hi, c) {
+  const par = sum(c.par);
+  return Math.round(hi * c.slope / 113 + (c.cr - par));
+}
+function strokesOnHole(ch, si, n = 18) {
+  if (ch >= 0) { const b = Math.floor(ch / n), rem = ch % n; return b + (si <= rem ? 1 : 0); }
+  const g = -ch, b = Math.floor(g / n), rem = g % n; return -(b + (si > n - rem ? 1 : 0));
+}
+const NINE = { front: [0,1,2,3,4,5,6,7,8], back: [9,10,11,12,13,14,15,16,17] };
+function isNine(r) { return r.nine === "front" || r.nine === "back"; }
+function playedIdx(r) { return isNine(r) ? NINE[r.nine] : NINE.front.concat(NINE.back); }
+// g : coups jusqu’au green (hors putts et pénalités) ; s : score du trou = g + putts + pénalités
+const gOf = h => h.g != null ? h.g : (h.s != null ? Math.max(1, h.s - (h.p || 0) - (h.pen || 0)) : null);
+function recalcHole(h) { const g = gOf(h); h.g = g; h.s = (g != null && h.p != null) ? g + h.p + (h.pen || 0) : null; }
+function holesComplete(r) { return r.mode === "holes" && r.holes && r.holes.length === 18 && playedIdx(r).every(i => Number.isFinite(r.holes[i].s) && r.holes[i].s > 0); }
+// Valeurs du parcours pour la partie jouée (18 trous ou un neuf)
+function ratingFor(r, c) {
+  if (!c) return null;
+  if (!isNine(r)) return { cr: c.cr, slope: c.slope, par: sum(c.par) };
+  const n = c.r9 && c.r9[r.nine]; if (!n || !n.cr || !n.slope) return null;
+  return { cr: n.cr, slope: n.slope, par: sum(NINE[r.nine].map(i => c.par[i])) };
+}
+// Score attendu sur 9 trous : formule officielle non publiée ; approximation 0,52 × index + 1,2
+function expected9(hi) { return 0.52 * hi + 1.2; }
+// Score brut ajusté : par+5 avant l’index (Règle 3.1a), net double bogey ensuite (Règle 3.1b)
+function adjustedGross(r, c, hiBefore) {
+  if (r.mode === "ags") return Number(r.ags);
+  if (!holesComplete(r)) return null;
+  const idx = playedIdx(r), nine = isNine(r), rt = ratingFor(r, c);
+  if (!rt) return null;
+  let ch = null;
+  if (hiBefore != null) ch = nine ? Math.round(hiBefore / 2 * rt.slope / 113 + (rt.cr - rt.par)) : courseHandicap(hiBefore, c);
+  // sur 9 trous, les coups reçus sont répartis selon l’ordre des index des 9 trous joués
+  const order = idx.slice().sort((a, b) => c.si[a] - c.si[b]);
+  let total = 0;
+  idx.forEach(i => {
+    const h = r.holes[i], par = c.par[i];
+    let max;
+    if (ch == null) max = par + 5;
+    else {
+      const st = nine ? strokesOnHole(ch, order.indexOf(i) + 1, 9) : strokesOnHole(ch, c.si[i]);
+      max = (ch > (nine ? 27 : 54) && st >= 4) ? par + 5 : par + 2 + st;
+    }
+    total += Math.min(h.s, max);
+  });
+  return total;
+}
+function lowHIFor(hist, date) {
+  const t = new Date(date).getTime(), start = t - 365 * 86400000;
+  let low = null, before = null;
+  for (const h of hist) {
+    const ht = new Date(h.date).getTime();
+    if (h.hi == null) continue;
+    if (ht < start) { before = h.hi; continue; }
+    if (ht < t) low = low == null ? h.hi : Math.min(low, h.hi);
+  }
+  if (before != null) low = low == null ? before : Math.min(low, before);
+  return low;
+}
+function computeSeries(filterFn) {
+  const rounds = S.rounds.filter(filterFn).filter(r => courseById(r.courseId) || r.mode === "diff")
+    .slice().sort((a, b) => (a.date + (a.created || "")).localeCompare(b.date + (b.created || "")));
+  const recs = [], hist = [], out = [];
+  let hi = null;
+  for (const r of rounds) {
+    const c = courseById(r.courseId);
+    const hiBefore = hi;
+    let ags = null, diff, nineInfo = null;
+    if (r.mode === "diff") { diff = Number(r.diff); if (!Number.isFinite(diff)) continue; }
+    else {
+      const rt = ratingFor(r, c); if (!rt) continue;
+      ags = adjustedGross(r, c, hiBefore);
+      if (ags == null || !Number.isFinite(ags)) continue;
+      const pcc = Number(r.pcc) || 0;
+      if (isNine(r)) {
+        if (hiBefore == null) { out.push({ round: r, course: c, ags, diff: null, esr: 0, hiBefore, hiAfter: null, cap: "", pending: true }); continue; }
+        const d9 = (113 / rt.slope) * (ags - rt.cr - 0.5 * pcc);
+        nineInfo = { d9, exp: expected9(hiBefore) };
+        diff = d9 + nineInfo.exp;
+      } else diff = (113 / rt.slope) * (ags - rt.cr - pcc);
+    }
+    const rec = { id: r.id, date: r.date, d: r1(diff), adj: 0 };
+    recs.push(rec);
+    let esr = 0;
+    // esrForced : ajustement relevé sur le certificat fédéral (l’historique antérieur n’étant pas connu ici)
+    if (Number.isFinite(r.esrForced)) esr = r.esrForced;
+    else if (hiBefore != null) {
+      const gap = hiBefore - diff;
+      if (gap >= 10) esr = -2; else if (gap >= 7) esr = -1;
+    }
+    if (esr) recs.slice(-20).forEach(x => x.adj += esr);
+    const last = recs.slice(-20), n = last.length, tb = tableFor(n);
+    let calc = null, cap = "";
+    if (tb) {
+      const vals = last.map(x => x.d + x.adj).sort((a, b) => a - b).slice(0, tb[0]);
+      calc = r1(sum(vals) / vals.length + tb[1]);
+      if (recs.length >= 20) {
+        const low = lowHIFor(hist, r.date);
+        if (low != null && calc - low > 3) {
+          let capped = low + 3 + (calc - low - 3) * 0.5; cap = "soft cap";
+          if (capped - low > 5) { capped = low + 5; cap = "hard cap"; }
+          calc = r1(capped);
+        }
+      }
+      if (calc > 54) calc = 54;
+    }
+    hi = calc;
+    hist.push({ date: r.date, hi });
+    out.push({ round: r, course: c, ags, diff: r1(diff), esr, hiBefore, hiAfter: hi, cap, nineInfo });
+  }
+  // différentiels retenus dans l’index actuel
+  const last = recs.slice(-20), tb = tableFor(last.length), counting = new Set();
+  if (tb) last.map(x => ({ id: x.id, v: x.d + x.adj })).sort((a, b) => a.v - b.v).slice(0, tb[0]).forEach(x => counting.add(x.id));
+  return { points: out, current: hi, count: recs.length, counting, recs };
+}
+
+/* ---------- routeur ---------- */
+const ROUTES = ["index", "parties", "parcours", "stats", "reglages"];
+function route() {
+  const h = location.hash.replace("#", "");
+  const r = ROUTES.includes(h) ? h : "index";
+  document.querySelectorAll("nav.tabs a").forEach(a => a.setAttribute("aria-current", a.dataset.r === r ? "page" : "false"));
+  ({ index: viewIndex, parties: viewRounds, parcours: viewCourses, stats: viewStats, reglages: viewSettings })[r]();
+  window.scrollTo(0, 0);
+}
+window.addEventListener("hashchange", route);
+
+/* ---------- vue Index ---------- */
+function viewIndex() {
+  const res = {}; SERIES.forEach(s => res[s.key] = computeSeries(s.filter));
+  const v = $("#view");
+  let html = `<h2>Mon index</h2><div class="indexes">`;
+  SERIES.forEach(s => {
+    const r = res[s.key];
+    html += `<div><div class="lab"><span class="dot" style="background:${COLORS[s.key]}"></span>${s.label}</div>
+      <div class="big">${r.current == null ? "–" : fmt1(r.current)}</div>
+      <div class="sub">${s.desc}<br>${r.count} score${r.count > 1 ? "s" : ""}${r.current == null && r.count < 3 ? ` · ${3 - r.count} de plus requis` : ""}</div></div>`;
+  });
+  html += `</div>`;
+  if (S.settings.officialHI != null && S.settings.officialHI !== "") {
+    const o = res.off.current;
+    const gap = o == null ? null : r1(o - Number(S.settings.officialHI));
+    html += `<p class="declared">Index de la fédération saisi : <b>${fmt1(Number(S.settings.officialHI))}</b>${gap == null ? "" : gap === 0 ? " · identique à la reconstitution" : ` · écart avec la reconstitution : ${gap > 0 ? "+" : ""}${gap.toFixed(1)}`}</p>`;
+  }
+  html += `<div class="chartbox">${chartSVG(res)}<div class="legend">` +
+    SERIES.map(s => `<button data-k="${s.key}" aria-pressed="${chartOn[s.key]}"><span class="dot" style="background:${COLORS[s.key]}"></span>${s.label}</button>`).join("") +
+    `</div></div>`;
+  html += `<h2>Détail du calcul</h2><div class="seg" id="segIdx">` +
+    SERIES.map(s => `<button data-k="${s.key}" aria-pressed="${indexSeries === s.key}">${s.label}</button>`).join("") + `</div>`;
+  const cur = res[indexSeries];
+  if (!cur.points.length) html += `<div class="empty" style="margin-top:10px">Aucune partie dans cette catégorie. Ajoutez-en une depuis l’onglet Parties.</div>`;
+  else {
+    html += `<p class="small muted" style="margin-top:8px">Lignes surlignées : différentiels retenus dans l’index actuel.</p><div class="tablewrap"><table><thead><tr><th>Date</th><th>Parcours</th><th class="n">SBA</th><th class="n">Diff.</th><th class="n">Index</th></tr></thead><tbody>`;
+    cur.points.slice().reverse().forEach(p => {
+      const flags = [isNine(p.round) ? (p.pending ? "9 trous, ignoré tant qu’aucun index n’existe" : "9 trous + score attendu") : "", p.esr ? `score exceptionnel ${p.esr}` : "", p.cap].filter(Boolean).join(", ");
+      html += `<tr class="${cur.counting.has(p.round.id) ? "counts" : ""}"><td>${fmtDate(p.round.date)}</td><td>${esc(p.course ? p.course.name : "—")}${indexSeries === "mix" ? ` <span class="tag ${p.round.type}">${p.round.type === "comp" ? "C" : "E"}</span>` : ""}${flags ? `<br><span class="flagtxt">${esc(flags)}</span>` : ""}</td><td class="n">${p.ags ?? "–"}</td><td class="n">${fmtDiff(p.diff)}</td><td class="n"><b>${fmt1(p.hiAfter)}</b></td></tr>`;
+    });
+    html += `</tbody></table></div><p class="small muted">SBA : score brut ajusté. Diff. : différentiel de score.</p>`;
+  }
+  v.innerHTML = html;
+  v.querySelectorAll(".legend button").forEach(b => b.onclick = () => { chartOn[b.dataset.k] = !chartOn[b.dataset.k]; viewIndex(); });
+  v.querySelectorAll("#segIdx button").forEach(b => b.onclick = () => { indexSeries = b.dataset.k; viewIndex(); });
+}
+function chartSVG(res) {
+  const W = 340, H = 190, L = 34, R = 10, T = 12, B = 26;
+  const pts = [];
+  SERIES.forEach(s => { if (chartOn[s.key]) res[s.key].points.forEach(p => { if (p.hiAfter != null) pts.push({ k: s.key, t: new Date(p.round.date).getTime(), v: p.hiAfter }); }); });
+  if (!pts.length) return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Graphique vide"><text x="${W/2}" y="${H/2}" text-anchor="middle" fill="var(--muted)" font-size="13">L’évolution apparaîtra après 3 scores.</text></svg>`;
+  let t0 = Math.min(...pts.map(p => p.t)), t1 = Math.max(...pts.map(p => p.t));
+  if (t0 === t1) { t0 -= 86400000 * 15; t1 += 86400000 * 15; }
+  let v0 = Math.floor(Math.min(...pts.map(p => p.v)) - 1), v1 = Math.ceil(Math.max(...pts.map(p => p.v)) + 1);
+  const x = t => L + (t - t0) / (t1 - t0) * (W - L - R);
+  const y = v => T + (v1 - v) / (v1 - v0) * (H - T - B);
+  let g = "";
+  const step = Math.max(1, Math.ceil((v1 - v0) / 5));
+  for (let v = v0; v <= v1; v += step) g += `<line x1="${L}" x2="${W - R}" y1="${y(v)}" y2="${y(v)}" stroke="var(--grid)" stroke-width="1"/><text x="${L - 6}" y="${y(v) + 4}" text-anchor="end" font-size="11" fill="var(--muted)">${v}</text>`;
+  const d0 = new Date(t0), d1 = new Date(t1);
+  const ml = d => d.toLocaleDateString("fr-BE", { month: "short", year: "2-digit" });
+  g += `<text x="${L}" y="${H - 6}" font-size="11" fill="var(--muted)">${ml(d0)}</text><text x="${W - R}" y="${H - 6}" text-anchor="end" font-size="11" fill="var(--muted)">${ml(d1)}</text>`;
+  SERIES.forEach(s => {
+    if (!chartOn[s.key]) return;
+    const ps = pts.filter(p => p.k === s.key);
+    if (!ps.length) return;
+    g += `<polyline fill="none" stroke="${COLORS[s.key]}" stroke-width="2.4" stroke-linejoin="round" points="${ps.map(p => x(p.t).toFixed(1) + "," + y(p.v).toFixed(1)).join(" ")}"/>`;
+    const lp = ps[ps.length - 1];
+    g += `<circle cx="${x(lp.t)}" cy="${y(lp.v)}" r="3.6" fill="${COLORS[s.key]}"/>`;
+  });
+  return `<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="Évolution de l’index">${g}</svg>`;
+}
+
+/* ---------- vue Parties ---------- */
+function grossOf(r) { return holesComplete(r) ? sum(playedIdx(r).map(i => r.holes[i].s)) : null; }
+function viewRounds() {
+  const v = $("#view");
+  const hasCourse = S.courses.length > 0;
+  let html = `<h2>Mes parties</h2>`;
+  if (!hasCourse) html += `<div class="empty">Commencez par enregistrer un parcours (onglet Parcours), puis ajoutez vos parties.</div>`;
+  else if (!S.rounds.length) html += `<div class="empty">Aucune partie pour l’instant. Ajoutez vos compétitions passées pour reconstituer votre index officiel.</div>`;
+  else {
+    const all = computeSeries(() => true);
+    const byId = {}; all.points.forEach(p => byId[p.round.id] = p);
+    html += `<div class="list">`;
+    S.rounds.slice().sort((a, b) => b.date.localeCompare(a.date)).forEach(r => {
+      const c = courseById(r.courseId), g = grossOf(r), p = byId[r.id];
+      const main = g ?? (r.mode === "ags" ? r.ags : "");
+      html += `<button class="item" data-id="${r.id}"><div class="main"><div class="t">${esc(c ? c.name : "Parcours supprimé")}</div><div class="s">${fmtDate(r.date)} · <span class="tag ${r.type}">${r.type === "comp" ? "Compétition" : "Entraînement"}</span>${isNine(r) ? " · 9 trous" : ""}${p && p.diff != null ? ` · diff. ${fmtDiff(p.diff)}` : ""}</div></div><div class="score">${main === "" ? (r.mode === "diff" ? fmtDiff(Number(r.diff)) : "–") : main}</div></button>`;
+    });
+    html += `</div>`;
+  }
+  v.innerHTML = html + (hasCourse ? `<button class="fab" id="addRound">Ajouter une partie</button>` : `<button class="fab" id="goCourse">Ajouter un parcours</button>`);
+  v.querySelectorAll(".item").forEach(b => b.onclick = () => openRoundDetail(b.dataset.id));
+  if ($("#addRound")) $("#addRound").onclick = () => openRoundForm();
+  if ($("#goCourse")) $("#goCourse").onclick = () => { location.hash = "#parcours"; setTimeout(() => openCourseForm(), 50); };
+}
+
+/* ---------- feuille ---------- */
+function openSheet(title, html) {
+  $("#sheetTitle").textContent = title; $("#sheetBody").innerHTML = html;
+  $("#sheet").classList.add("open"); $("#shade").classList.add("open"); $("#sheetBody").scrollTop = 0;
+}
+function closeSheet() { $("#sheet").classList.remove("open"); $("#shade").classList.remove("open"); }
+$("#sheetClose").onclick = closeSheet; $("#shade").onclick = closeSheet;
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeSheet(); });
+
+/* ---------- formulaire partie ---------- */
+let F = null, holeIdx = 0;
+// Par défaut, le parcours et le départ de la dernière partie
+function lastCourseId() {
+  const r = S.rounds.slice().sort((a, b) => b.date.localeCompare(a.date)).find(x => courseById(x.courseId));
+  return r ? r.courseId : S.courses[0].id;
+}
+function openRoundForm(existing) {
+  F = existing ? clone(existing) : { id: uid(), created: new Date().toISOString(), date: todayISO(), courseId: lastCourseId(), type: "comp", mode: "holes", nine: "18", pcc: 0, holes: Array.from({ length: 18 }, () => ({ s: null, p: null, f: null, pen: 0 })), ags: "", diff: "", note: "" };
+  if (!F.holes || F.holes.length !== 18) F.holes = Array.from({ length: 18 }, () => ({ s: null, p: null, f: null, pen: 0 }));
+  holeIdx = playedIdx(F)[0];
+  openSheet(existing ? "Modifier la partie" : "Nouvelle partie", `<div id="rf"></div>`);
+  renderRoundForm();
+}
+function renderRoundForm() {
+  const c = courseById(F.courseId) || S.courses[0];
+  let h = `<div class="grid2"><label class="f">Date<input type="date" id="fDate" value="${esc(F.date)}"></label>
+    <label class="f">PCC du jour<select id="fPcc">${[-1, 0, 1, 2, 3].map(v => `<option value="${v}" ${Number(F.pcc) === v ? "selected" : ""}>${v > 0 ? "+" + v : v}</option>`).join("")}</select></label></div>
+    ${courseTeePicker(c)}${strokesInfo(c)}
+    <label class="f">Catégorie</label><div class="seg" id="fType"><button data-v="comp" aria-pressed="${F.type === "comp"}">Compétition</button><button data-v="train" aria-pressed="${F.type === "train"}">Entraînement</button></div>
+    <label class="f">Saisie</label><div class="seg" id="fMode"><button data-v="holes" aria-pressed="${F.mode === "holes"}">Trou par trou</button><button data-v="ags" aria-pressed="${F.mode === "ags"}">Score ajusté</button><button data-v="diff" aria-pressed="${F.mode === "diff"}">Différentiel</button></div>
+    <label class="f">Trous joués</label><div class="seg" id="fNine"><button data-v="18" aria-pressed="${!isNine(F)}">18 trous</button><button data-v="front" aria-pressed="${F.nine === "front"}">Aller 1–9</button><button data-v="back" aria-pressed="${F.nine === "back"}">Retour 10–18</button></div>`;
+  if (isNine(F) && F.mode !== "diff" && !ratingFor(F, c)) h += `<p class="err">Ce parcours n’a pas de Course Rating ni de Slope Rating pour ce neuf. Ajoutez-les dans l’onglet Parcours pour que la partie soit comptée.</p>`;
+  if (isNine(F) && F.mode === "diff") h += `<p class="note">Pour une partie de 9 trous, saisissez le différentiel 18 trous déjà calculé par votre fédération.</p>`;
+  if (F.mode === "holes") h += holeEntryHTML(c);
+  else if (F.mode === "ags") h += `<label class="f">Score brut ajusté (${isNine(F) ? "9 trous" : "18 trous"})<input type="number" inputmode="numeric" id="fAgs" value="${esc(F.ags)}"></label><p class="note">À utiliser si vous connaissez le score déjà ajusté (net double bogey appliqué), par exemple depuis votre fiche fédérale.</p>`;
+  else h += `<label class="f">Différentiel de score<input type="number" inputmode="decimal" step="0.1" id="fDiff" value="${esc(F.diff)}"></label><p class="note">À utiliser pour une compétition passée dont vous ne connaissez que le différentiel indiqué par votre club ou votre fédération.</p>`;
+  h += `<label class="f">Note (facultatif)<input type="text" id="fNote" value="${esc(F.note)}" maxlength="140"></label>
+    <div id="fErr" class="err" role="alert"></div>
+    <button class="btn block" id="fSave" style="margin-top:16px">Enregistrer la partie</button>`;
+  $("#rf").innerHTML = h;
+  $("#fDate").onchange = e => F.date = e.target.value;
+  $("#fPcc").onchange = e => F.pcc = Number(e.target.value);
+  $("#fCourseName").onchange = e => { const x = S.courses.find(y => y.name === e.target.value); if (x) F.courseId = x.id; renderRoundForm(); };
+  if ($("#fTee")) $("#fTee").querySelectorAll("button").forEach(b => b.onclick = () => { F.courseId = b.dataset.id; renderRoundForm(); });
+  $("#fNote").oninput = e => F.note = e.target.value;
+  $("#fType").querySelectorAll("button").forEach(b => b.onclick = () => { F.type = b.dataset.v; renderRoundForm(); });
+  $("#fMode").querySelectorAll("button").forEach(b => b.onclick = () => { F.mode = b.dataset.v; renderRoundForm(); });
+  $("#fNine").querySelectorAll("button").forEach(b => b.onclick = () => { F.nine = b.dataset.v; holeIdx = playedIdx(F)[0]; renderRoundForm(); });
+  if ($("#fAgs")) $("#fAgs").oninput = e => F.ags = e.target.value;
+  if ($("#fDiff")) $("#fDiff").oninput = e => F.diff = e.target.value;
+  if (F.mode === "holes") bindHoleEntry(c);
+  $("#fSave").onclick = saveRound;
+}
+// Coups reçus : calculés avec l’index officiel reconstitué (ou, à défaut, celui saisi dans Réglages)
+function currentHI() {
+  const o = computeSeries(r => r.type === "comp").current;
+  if (o != null) return o;
+  const d = S.settings.officialHI;
+  return d == null || d === "" ? null : Number(d);
+}
+function chFor(hi, c, nine) {
+  if (hi == null || !c) return null;
+  if (nine === "front" || nine === "back") {
+    const n = c.r9 && c.r9[nine]; if (!n || !n.cr || !n.slope) return null;
+    return Math.round(hi / 2 * n.slope / 113 + (n.cr - sum(NINE[nine].map(i => c.par[i]))));
+  }
+  return courseHandicap(hi, c);
+}
+function strokesFor(hi, c, nine, i) {
+  const ch = chFor(hi, c, nine); if (ch == null) return null;
+  if (nine === "front" || nine === "back") { const order = NINE[nine].slice().sort((a, b) => c.si[a] - c.si[b]); return strokesOnHole(ch, order.indexOf(i) + 1, 9); }
+  return strokesOnHole(ch, c.si[i]);
+}
+// Score maximal encodable par trou : par + coups reçus + 2 (par + 5 tant qu’aucun index n’existe)
+function maxHole(c, i) { const st = strokesFor(currentHI(), c, F ? F.nine : "18", i); return st == null ? c.par[i] + 5 : c.par[i] + 2 + st; }
+function clampHole(h, c, i, k) {
+  const mx = maxHole(c, i); let over = (h.g || 0) + (h.p || 0) - mx;
+  if (over <= 0) return false;
+  if (k === "p" && h.p != null) { const cut = Math.min(over, h.p); h.p -= cut; over -= cut; }
+  if (over > 0 && h.g != null) { const cut = Math.min(over, h.g - 1); h.g -= cut; over -= cut; }
+  if (over > 0 && h.p != null) h.p = Math.max(0, h.p - over);
+  return true;
+}
+// Points Stableford : 2 + (par + coups reçus) − score, jamais négatif
+function ptsFor(c, nine, i, s) { if (s == null) return null; const st = strokesFor(currentHI(), c, nine, i); return Math.max(0, 2 + c.par[i] + (st || 0) - s); }
+const fmtCH = ch => ch < 0 ? "+" + (-ch) : String(ch);
+function strokesInfo(c) {
+  const hi = currentHI(); if (hi == null) return "";
+  const ch = chFor(hi, c, isNine(F) ? F.nine : "18"); if (ch == null) return "";
+  return `<p class="note">Avec votre index ${fmt1(hi)}, vous recevez <b>${fmtCH(ch)} coup${Math.abs(ch) > 1 ? "s" : ""}</b> ${isNine(F) ? "sur ce neuf" : "depuis ce départ"} (course handicap).</p>`;
+}
+// Un sélecteur de parcours, puis un sélecteur de départ quand le parcours en a plusieurs
+function courseTeePicker(c) {
+  const names = [...new Set(S.courses.map(x => x.name))];
+  const tees = S.courses.filter(x => x.name === c.name).sort((a, b) => b.cr - a.cr);
+  const short = x => (x.tee || "—").split(" – ")[0];
+  const dup = new Set(tees.map(short)).size < tees.length;
+  let h = `<label class="f">Parcours<select id="fCourseName">${names.map(n => `<option ${n === c.name ? "selected" : ""}>${esc(n)}</option>`).join("")}</select></label>`;
+  if (tees.length > 1) h += `<label class="f">Départ</label><div class="seg" id="fTee">${tees.map(x => `<button data-id="${x.id}" aria-pressed="${x.id === c.id}">${esc(dup ? x.tee : short(x))}</button>`).join("")}</div>`;
+  return h;
+}
+function holeEntryHTML(c) {
+  const i = holeIdx, hd = F.holes[i], par = c.par[i];
+  if (par > 3 && hd.f == null) hd.f = 1; // fairway touché par défaut
+  if (hd.pen) { hd.g = gOf(hd) + hd.pen; hd.pen = 0; } // plus de compteur de pénalités : elles sont dans les coups jusqu’au green
+  const st = strokesFor(currentHI(), c, F.nine, i);
+  const stTxt = st == null ? "" : st > 0 ? ` · ${st} coup${st > 1 ? "s" : ""} reçu${st > 1 ? "s" : ""}` : st < 0 ? ` · ${-st} coup${st < -1 ? "s" : ""} rendu${st < -1 ? "s" : ""}` : " · aucun coup reçu";
+  const fwOpts = par > 3 ? `<div class="stepper" style="display:block"><span class="sl">Fairway</span><div class="fw" id="hFw">
+      <button data-v="1" aria-pressed="${hd.f !== 0}">Touché</button><button data-v="0" aria-pressed="${hd.f === 0}">Manqué</button></div></div>` : "";
+  const idx = playedIdx(F);
+  const gross = idx.some(k => F.holes[k].s) ? sum(idx.map(k => F.holes[k].s || 0)) : null;
+  // Brut cumulé / (par + coups reçus) cumulés sur les trous déjà saisis
+  const hiNow = currentHI(); let cg = 0, cp = 0;
+  idx.forEach(k => { const x = F.holes[k]; if (x.s) { cg += x.s; cp += c.par[k] + (strokesFor(hiNow, c, F.nine, k) || 0); } });
+  const tot = sum(idx.map(k => c.par[k] + (strokesFor(hiNow, c, F.nine, k) || 0)));
+  const frac = `<span class="${gross != null && cg < cp ? "sc-under" : ""}">${gross == null ? 0 : cg}/${tot}</span>`;
+  let ptsTot = 0; idx.forEach(k => { const x = F.holes[k]; if (x.s) ptsTot += ptsFor(c, F.nine, k, x.s); });
+  const hp = hd.s != null ? ptsFor(c, F.nine, i, hd.s) : null;
+  let strip = "";
+  idx.forEach(k => { const x = F.holes[k];
+    const cls = x.s && x.s < c.par[k] ? "under" : "";
+    strip += `<button data-k="${k}" aria-current="${k === i}" class="${cls}" aria-label="Trou ${k + 1}">${k + 1}<b>${x.s ?? "·"}</b><span class="sp">${x.s ? ptsFor(c, F.nine, k, x.s) + " pt" : " "}</span></button>`;
+  });
+  return `<div class="holecard">
+    <div class="holehead"><span class="hn">Trou ${i + 1}</span><span class="hp">Par ${par} · index ${c.si[i]}${stTxt}</span><span class="spacer"></span><span class="hp" title="Brut cumulé / total des coups (par + coups reçus) de la partie">Brut <b>${frac}</b></span></div>
+    <p class="small" style="margin:4px 0 0">Points Stableford – trou ${i + 1} : <b>${hp != null ? hp + " pt" + (hp > 1 ? "s" : "") : (hd.g != null && hd.p == null ? "ajoutez les putts" : "–")}</b> · total : <b>${ptsTot} pt${ptsTot > 1 ? "s" : ""}</b></p>
+    ${stepperHTML("Coups jusqu’au green (pénalités comprises)", "g", gOf(hd))}${stepperHTML("Putts", "p", hd.p)}${fwOpts}
+    <p class="small" style="margin:10px 0 0">Score du trou : <b>${hd.s ?? "–"}</b> <span class="muted">= coups jusqu’au green + putts</span><br><span class="muted">Maximum : <b>${maxHole(c, i)}</b> ${st == null ? "(par + 5, pas encore d’index)" : `(par ${par} + ${st} coup${Math.abs(st) > 1 ? "s" : ""} reçu${Math.abs(st) > 1 ? "s" : ""} + 2)`}</span></p>
+    <div class="row" style="margin-top:12px"><button class="btn ghost" id="hPrev" ${i === idx[0] ? "disabled" : ""}>Trou précédent</button><span class="spacer"></span><button class="btn" id="hNext">${i === idx[idx.length - 1] ? "Terminer" : "Trou suivant"}</button></div>
+    <div class="strip">${strip}</div></div>`;
+}
+function stepperHTML(label, key, val) {
+  return `<div class="stepper"><span class="sl">${label}</span><div class="ctl"><button data-k="${key}" data-d="-1" aria-label="${label} moins un">−</button><span class="val">${val ?? "–"}</span><button data-k="${key}" data-d="1" aria-label="${label} plus un">+</button></div></div>`;
+}
+function bindHoleEntry(c) {
+  const card = $(".holecard");
+  card.querySelectorAll(".stepper .ctl button").forEach(b => b.onclick = () => {
+    const hd = F.holes[holeIdx], k = b.dataset.k, d = Number(b.dataset.d);
+    const g0 = gOf(hd); hd.g = g0;
+    if (k === "g") hd.g = g0 == null ? Math.max(1, c.par[holeIdx] - 2) : Math.max(1, g0 + d);
+    else if (k === "p") hd.p = hd.p == null ? (d > 0 ? 1 : 0) : Math.max(0, hd.p + d);
+    else hd.pen = Math.max(0, (hd.pen || 0) + d);
+    clampHole(hd, c, holeIdx, k);
+    recalcHole(hd);
+    refreshHole(c);
+  });
+  if ($("#hFw")) $("#hFw").querySelectorAll("button").forEach(b => b.onclick = () => { F.holes[holeIdx].f = b.dataset.v === "null" ? null : Number(b.dataset.v); refreshHole(c); });
+  const idx = playedIdx(F), pos = idx.indexOf(holeIdx);
+  $("#hPrev").onclick = () => { if (pos > 0) { holeIdx = idx[pos - 1]; refreshHole(c); } };
+  $("#hNext").onclick = () => { if (pos < idx.length - 1) { holeIdx = idx[pos + 1]; refreshHole(c); } else $("#fSave").scrollIntoView({ block: "center" }); };
+  card.querySelectorAll(".strip button").forEach(b => b.onclick = () => { holeIdx = Number(b.dataset.k); refreshHole(c); });
+}
+/* saisie vocale (dictée du clavier) */
+const NUMW = { zero: 0, un: 1, une: 1, deux: 2, trois: 3, quatre: 4, cinq: 5, six: 6, sept: 7, huit: 8, neuf: 9, dix: 10, onze: 11, douze: 12, treize: 13, quatorze: 14, quinze: 15, seize: 16 };
+function normVoice(t) {
+  let s = String(t || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[’']/g, " ").replace(/[,.;:!?]/g, " ");
+  s = s.replace(/dix[ -]sept/g, "17").replace(/dix[ -]huit/g, "18").replace(/fair ?ways?/g, "fairway");
+  s = s.replace(/\b(zero|une|un|deux|trois|quatre|cinq|six|sept|huit|neuf|dix|onze|douze|treize|quatorze|quinze|seize)\b/g, w => NUMW[w]);
+  return s.replace(/\s+/g, " ").trim();
+}
+function parseVoice(text, c, curIdx) {
+  const parts = normVoice(text).split(/\btrous?\b/), res = [];
+  parts.forEach((seg, k) => {
+    seg = seg.trim(); if (!seg) return;
+    let hole = curIdx;
+    if (k > 0) { const m = seg.match(/^(?:n ?°|numero )?(\d{1,2})\b/); if (!m) return; const n = Number(m[1]); if (n < 1 || n > 18) return; hole = n - 1; seg = seg.slice(m[0].length); }
+    const par = c.par[hole], r = { hole };
+    let m;
+    if ((m = seg.match(/(\d{1,2}) ?coups?\b/)) || (m = seg.match(/\bgreen en (\d{1,2})\b/))) r.g = Number(m[1]);
+    if ((m = seg.match(/(\d) ?putts?\b/)) || (m = seg.match(/\bputts? ?(\d)\b/))) r.p = Number(m[1]);
+    if ((m = seg.match(/(\d) ?penalites?\b/)) || (m = seg.match(/\bpenalites? ?(\d)\b/))) r.pen = Number(m[1]);
+    else if (/\bpenalite\b/.test(seg)) r.pen = 1;
+    if (/\bfairway (touche|ok|oui|pris|trouve)/.test(seg)) r.f = 1;
+    else if (/\bfairway (manque|rate|non|loupe)|\brough\b|hors fairway/.test(seg)) r.f = 0;
+    if (r.g == null) {
+      const rel = [[/albatros/, -3], [/\beagle|\baigle/, -2], [/birdie/, -1], [/triple bogey/, 3], [/double bogey/, 2], [/bogey/, 1], [/\bpar\b/, 0]];
+      for (const [re, o] of rel) if (re.test(seg)) { r.s = par + o; break; }
+    }
+    if ((r.g == null && r.s == null) || r.p == null) {
+      const rest = seg.replace(/\bgreen en \d{1,2}\b/g, " ").replace(/(\d{1,2}) ?(coups?|putts?|penalites?)\b/g, " ").replace(/\b(putts?|penalites?) ?\d\b/g, " ");
+      const nums = (rest.match(/\b\d{1,2}\b/g) || []).map(Number);
+      if (r.g == null && r.s == null && nums.length) r.g = nums.shift();
+      if (r.p == null && nums.length) r.p = nums.shift();
+    }
+    if (Object.keys(r).length > 1) res.push(r);
+  });
+  return res;
+}
+
+function applyVoice(c) {
+  const inp = $("#vIn"), idx = playedIdx(F);
+  const res = parseVoice(inp.value, c, holeIdx).filter(r => idx.includes(r.hole));
+  if (!res.length) { $("#vOut").textContent = "Phrase non reconnue. Exemple : « 3 coups, 2 putts, fairway touché »."; return; }
+  const msgs = [];
+  res.forEach(r => {
+    const h = F.holes[r.hole];
+    h.g = gOf(h);
+    if (r.p != null && r.p >= 0 && r.p <= 9) h.p = r.p;
+    if (r.f != null && c.par[r.hole] > 3) h.f = r.f;
+    h.pen = 0;
+    if (r.g != null && r.g >= 1 && r.g <= 20) h.g = r.g;
+    // « par », « bogey »… donnent le score du trou : on en déduit les coups jusqu’au green
+    if (r.s != null && h.p != null) h.g = Math.max(1, r.s - h.p - (h.pen || 0));
+    const capped = clampHole(h, c, r.hole, "g");
+    recalcHole(h);
+    msgs.push(`trou ${r.hole + 1} : ` + [h.g != null ? h.g + " coups jusqu’au green" : "", h.p != null ? h.p + " putts" : "putts à préciser", h.f === 1 ? "fairway touché" : h.f === 0 ? "fairway manqué" : "", h.s != null ? "score " + h.s + " (" + ptsFor(c, F.nine, r.hole, h.s) + " pts Stableford)" : "", capped ? "limité au maximum de " + maxHole(c, r.hole) : ""].filter(Boolean).join(", "));
+  });
+  const last = res[res.length - 1].hole, pos = idx.indexOf(last);
+  holeIdx = (res.length === 1 && last === holeIdx && pos < idx.length - 1) ? idx[pos + 1] : last;
+  refreshHole(c);
+  $("#vOut").textContent = "Compris, " + msgs.join(" ; ") + ". Vérifiez avant d’enregistrer.";
+}
+function refreshHole(c) {
+  const card = $(".holecard"); const tmp = document.createElement("div"); tmp.innerHTML = holeEntryHTML(c);
+  card.replaceWith(tmp.firstElementChild); bindHoleEntry(c);
+}
+async function saveRound() {
+  const err = $("#fErr"); err.textContent = "";
+  if (!F.date) { err.textContent = "Indiquez la date de la partie."; return; }
+  if (F.mode === "holes" && !holesComplete(F)) {
+    const miss = playedIdx(F).filter(i => !F.holes[i].s).map(i => i + 1);
+    err.textContent = `Il manque les coups jusqu’au green ou les putts aux trous ${miss.join(", ")}. Tous les trous joués doivent être remplis.`; return;
+  }
+  if (F.mode === "ags") { const a = Number(F.ags); if (!Number.isFinite(a) || a < (isNine(F) ? 9 : 18) || a > 250) { err.textContent = "Indiquez un score brut ajusté valide."; return; } F.ags = a; }
+  if (F.mode === "diff") { const d = Number(F.diff); if (!Number.isFinite(d) || d < -20 || d > 80) { err.textContent = "Indiquez un différentiel valide."; return; } F.diff = d; }
+  if (F.mode === "holes") { const cc = courseById(F.courseId); if (cc) playedIdx(F).forEach(k => { if (cc.par[k] > 3 && F.holes[k].f == null) F.holes[k].f = 1; }); }
+  const i = S.rounds.findIndex(r => r.id === F.id);
+  const obj = clone(F);
+  if (i >= 0) S.rounds[i] = obj; else S.rounds.push(obj);
+  const ok = await safe(() => Store.put("rounds", obj), "Partie enregistrée");
+  if (ok) { closeSheet(); route(); }
+}
+function openRoundDetail(id) {
+  const r = S.rounds.find(x => x.id === id); if (!r) return;
+  const c = courseById(r.courseId);
+  const all = computeSeries(() => true).points.find(p => p.round.id === id);
+  let h = `<p><b>${esc(c ? c.name : "Parcours supprimé")}</b>${c && c.tee ? " – " + esc(c.tee) : ""}<br>${fmtDate(r.date)} · ${isNine(r) ? (r.nine === "front" ? "Aller (1–9) · " : "Retour (10–18) · ") : ""}<span class="tag ${r.type}">${r.type === "comp" ? "Compétition" : "Entraînement"}</span>${Number(r.pcc) ? ` · PCC ${r.pcc > 0 ? "+" : ""}${r.pcc}` : ""}</p>`;
+  if (holesComplete(r) && c) {
+    const hiN = currentHI(), cum = {}, pts = {}; let ca = 0, cb = 0, cpt = 0;
+    playedIdx(r).forEach(k => { ca += r.holes[k].s; cb += c.par[k] + (strokesFor(hiN, c, r.nine, k) || 0); cum[k] = [ca, cb]; const pt = ptsFor(c, r.nine, k, r.holes[k].s); cpt += pt; pts[k] = [pt, cpt]; });
+    const totR = cb;
+    const row = (from) => {
+      let t = `<tr><th>Trou</th>${Array.from({ length: 9 }, (_, k) => `<th class="c">${from + k + 1}</th>`).join("")}<th class="c">Tot.</th></tr>`;
+      t += `<tr><td>Par</td>${c.par.slice(from, from + 9).map(p => `<td class="c">${p}</td>`).join("")}<td class="c">${sum(c.par.slice(from, from + 9))}</td></tr>`;
+      t += `<tr><td>Coups</td>${r.holes.slice(from, from + 9).map((x, k) => `<td class="c ${x.s < c.par[from + k] ? "sc-under" : ""}">${x.s}</td>`).join("")}<td class="c"><b>${sum(r.holes.slice(from, from + 9).map(x => x.s))}</b></td></tr>`;
+      t += `<tr><td>Putts</td>${r.holes.slice(from, from + 9).map(x => `<td class="c">${x.p ?? "–"}</td>`).join("")}<td class="c">${r.holes.slice(from, from + 9).every(x => x.p != null) ? sum(r.holes.slice(from, from + 9).map(x => x.p)) : "–"}</td></tr>`;
+      t += `<tr><td>Cumul</td>${Array.from({ length: 9 }, (_, k) => { const v = cum[from + k]; return `<td class="c ${v && v[0] < v[1] ? "sc-under" : ""}">${v ? v[0] + "/" + totR : "–"}</td>`; }).join("")}<td class="c"></td></tr>`;
+      t += `<tr><td>Stableford trou</td>${Array.from({ length: 9 }, (_, k) => `<td class="c">${pts[from + k] ? pts[from + k][0] : "–"}</td>`).join("")}<td class="c"><b>${Array.from({ length: 9 }, (_, k) => pts[from + k] ? pts[from + k][0] : 0).reduce((a, b) => a + b, 0)}</b></td></tr>`;
+      t += `<tr><td>Stableford total</td>${Array.from({ length: 9 }, (_, k) => `<td class="c">${pts[from + k] ? pts[from + k][1] : "–"}</td>`).join("")}<td class="c"></td></tr>`;
+      return t;
+    };
+    h += `<div class="tablewrap scorecard"><table>${r.nine !== "back" ? row(0) : ""}${r.nine !== "front" ? row(9) : ""}</table></div><p style="margin-top:8px">Total : <b>${cpt} points Stableford</b></p>${hiN != null ? `<p class="small muted">Cumul : coups joués / total de la partie (par + coups reçus), selon votre index actuel de ${fmt1(hiN)}. En rouge : en avance sur votre handicap à ce trou. Points calculés avec le nombre complet de coups reçus.</p>` : ""}`;
+  }
+  if (all) h += `<p style="margin-top:12px">Score brut ajusté (série hypothétique) : <b>${all.ags ?? "–"}</b> · différentiel : <b>${fmtDiff(all.diff)}</b>${all.nineInfo ? ` (9 trous : ${all.nineInfo.d9.toFixed(2)} + score attendu ${all.nineInfo.exp.toFixed(2)})` : ""}${all.pending ? " (en attente d’un index)" : ""}</p><p class="small muted">Le score ajusté peut différer légèrement d’une série à l’autre, car le net double bogey dépend de l’index au moment de la partie dans chaque série.</p>`;
+  if (r.note) h += `<p class="note">${esc(r.note)}</p>`;
+  h += `<div class="row" style="margin-top:16px"><button class="btn ghost" id="dEdit">Modifier</button><span class="spacer"></span><button class="btn danger" id="dDel">Supprimer</button></div>`;
+  openSheet("Partie", h);
+  $("#dEdit").onclick = () => openRoundForm(r);
+  $("#dDel").onclick = async () => {
+    if (!confirm("Supprimer définitivement cette partie ?")) return;
+    S.rounds = S.rounds.filter(x => x.id !== id);
+    if (await safe(() => Store.del("rounds", id), "Partie supprimée")) { closeSheet(); route(); }
+  };
+}
+
+/* ---------- vue Parcours ---------- */
+function viewCourses() {
+  const v = $("#view");
+  let html = `<h2>Mes parcours</h2>`;
+  const hiC = currentHI();
+  if (hiC != null && S.courses.length) html += `<p class="small muted">Coups reçus calculés avec votre index ${fmt1(hiC)}.</p>`;
+  if (!S.courses.length) html += `<div class="empty">Ajoutez un parcours avec son Course Rating, son Slope Rating, le par et l’index (stroke index) de chaque trou. Ces données figurent sur la carte de score du club.</div>`;
+  else {
+    html += `<div class="list">`;
+    S.courses.forEach(c => {
+      const n = S.rounds.filter(r => r.courseId === c.id).length;
+      html += `<button class="item" data-id="${c.id}"><div class="main"><div class="t">${esc(c.name)}${c.tee ? " – " + esc(c.tee) : ""}</div><div class="s">CR ${c.cr} · Slope ${c.slope} · Par ${sum(c.par)} · ${n} partie${n > 1 ? "s" : ""}</div>${hiC != null ? `<div class="s"><b>${fmtCH(chFor(hiC, c, "18"))} coups reçus</b>${chFor(hiC, c, "front") != null ? ` · aller ${fmtCH(chFor(hiC, c, "front"))}` : ""}${chFor(hiC, c, "back") != null ? ` · retour ${fmtCH(chFor(hiC, c, "back"))}` : ""}</div>` : ""}</div></button>`;
+    });
+    html += `</div>`;
+  }
+  v.innerHTML = html + `<button class="fab" id="addCourse">Ajouter un parcours</button>`;
+  v.querySelectorAll(".item").forEach(b => b.onclick = () => openCourseForm(S.courses.find(c => c.id === b.dataset.id)));
+  $("#addCourse").onclick = () => openCourseForm();
+}
+function openCourseForm(existing) {
+  const c = existing ? clone(existing) : { id: uid(), name: "", tee: "", cr: "", slope: "", par: Array(18).fill(4), si: Array.from({ length: 18 }, (_, i) => i + 1) };
+  if (!c.r9) c.r9 = { front: { cr: "", slope: "" }, back: { cr: "", slope: "" } };
+  let rows = "";
+  for (let i = 0; i < 18; i++) rows += `<div class="h">${i + 1}</div><input type="number" inputmode="numeric" data-par="${i}" value="${c.par[i]}" aria-label="Par du trou ${i + 1}"><input type="number" inputmode="numeric" data-si="${i}" value="${c.si[i]}" aria-label="Index du trou ${i + 1}">`;
+  const preset = existing ? "" : `<div class="note"><label class="f" style="margin-top:0">Préremplir avec le Golf de Pierpont (Grand Pierpont)<select id="pTee">${PIERPONT.tees.map(t => `<option value="${t.k}">${t.tee}</option>`).join("")}</select></label><button class="btn ghost" id="pLoad" style="margin-top:8px">Remplir le formulaire</button></div>`;
+  const h = `${preset}<label class="f">Nom du parcours<input type="text" id="cName" value="${esc(c.name)}" maxlength="60"></label>
+    <label class="f">Départ (facultatif)<input type="text" id="cTee" value="${esc(c.tee)}" placeholder="Jaunes, blancs…" maxlength="30"></label>
+    <div class="grid2"><label class="f">Course Rating<input type="number" inputmode="decimal" step="0.1" id="cCr" value="${esc(c.cr)}"></label>
+    <label class="f">Slope Rating<input type="number" inputmode="numeric" id="cSlope" value="${esc(c.slope)}"></label></div>
+    <p class="note">Valeurs pour 18 trous et pour le départ que vous jouez, telles qu’indiquées sur la carte de score ou par la fédération.</p>
+    <label class="f">Valeurs 9 trous (pour les parties de 9 trous, facultatif)</label>
+    <div class="grid2"><label class="f">CR aller (1–9)<input type="number" inputmode="decimal" step="0.1" id="c9fCr" value="${esc(c.r9.front.cr)}"></label><label class="f">Slope aller<input type="number" inputmode="numeric" id="c9fSl" value="${esc(c.r9.front.slope)}"></label>
+    <label class="f">CR retour (10–18)<input type="number" inputmode="decimal" step="0.1" id="c9bCr" value="${esc(c.r9.back.cr)}"></label><label class="f">Slope retour<input type="number" inputmode="numeric" id="c9bSl" value="${esc(c.r9.back.slope)}"></label></div>
+    <div class="holes-edit"><span class="small muted">Trou</span><span class="small muted">Par</span><span class="small muted">Index du trou</span>${rows}</div>
+    <div id="cErr" class="err" role="alert"></div>
+    <button class="btn block" id="cSave" style="margin-top:16px">Enregistrer le parcours</button>
+    ${existing ? `<button class="btn danger block" id="cDel" style="margin-top:10px">Supprimer le parcours</button>` : ""}`;
+  openSheet(existing ? "Modifier le parcours" : "Nouveau parcours", h);
+  if ($("#pLoad")) $("#pLoad").onclick = () => {
+    const t = PIERPONT.tees.find(x => x.k === $("#pTee").value);
+    $("#cName").value = PIERPONT.name; $("#cTee").value = t.tee;
+    $("#cCr").value = t.cr; $("#cSlope").value = t.slope;
+    $("#c9fCr").value = t.f[0]; $("#c9fSl").value = t.f[1]; $("#c9bCr").value = t.b[0]; $("#c9bSl").value = t.b[1];
+    document.querySelectorAll("[data-par]").forEach((x, i) => x.value = PIERPONT.par[i]);
+    document.querySelectorAll("[data-si]").forEach((x, i) => x.value = PIERPONT.si[i]);
+  };
+  $("#cSave").onclick = async () => {
+    const err = $("#cErr"); err.textContent = "";
+    c.name = $("#cName").value.trim(); c.tee = $("#cTee").value.trim();
+    c.cr = Number($("#cCr").value); c.slope = Number($("#cSlope").value);
+    c.par = Array.from(document.querySelectorAll("[data-par]")).map(x => Number(x.value));
+    c.si = Array.from(document.querySelectorAll("[data-si]")).map(x => Number(x.value));
+    const n9 = (a, b) => { const cr = $(a).value.trim(), sl = $(b).value.trim(); return cr === "" && sl === "" ? { cr: "", slope: "" } : { cr: Number(cr), slope: Number(sl) }; };
+    c.r9 = { front: n9("#c9fCr", "#c9fSl"), back: n9("#c9bCr", "#c9bSl") };
+    for (const k of ["front", "back"]) { const n = c.r9[k]; if (n.cr !== "" && (!(n.cr > 15 && n.cr < 50) || !(n.slope > 0 && n.slope <= 200))) { err.textContent = "Les valeurs 9 trous doivent être complètes (Course Rating et Slope) ou laissées vides."; return; } }
+    if (!c.name) { err.textContent = "Donnez un nom au parcours."; return; }
+    if (!Number.isFinite(c.cr) || c.cr < 40 || c.cr > 90) { err.textContent = "Indiquez un Course Rating valide (18 trous)."; return; }
+    if (!Number.isFinite(c.slope) || c.slope <= 0 || c.slope > 200) { err.textContent = "Indiquez un Slope Rating valide."; return; }
+    if (c.par.some(p => !(p >= 3 && p <= 6))) { err.textContent = "Chaque par doit être compris entre 3 et 6."; return; }
+    const siOk = c.si.slice().sort((a, b) => a - b).every((v, i) => v === i + 1);
+    if (!siOk) { err.textContent = "Les index des trous doivent utiliser chaque valeur de 1 à 18 une seule fois."; return; }
+    const i = S.courses.findIndex(x => x.id === c.id);
+    if (i >= 0) S.courses[i] = c; else S.courses.push(c);
+    if (await safe(() => Store.put("courses", c), "Parcours enregistré")) { closeSheet(); route(); }
+  };
+  if ($("#cDel")) $("#cDel").onclick = async () => {
+    const n = S.rounds.filter(r => r.courseId === c.id).length;
+    if (n) { $("#cErr").textContent = `Ce parcours est utilisé par ${n} partie${n > 1 ? "s" : ""}. Supprimez-les d’abord.`; return; }
+    if (!confirm("Supprimer ce parcours ?")) return;
+    S.courses = S.courses.filter(x => x.id !== c.id);
+    if (await safe(() => Store.del("courses", c.id), "Parcours supprimé")) { closeSheet(); route(); }
+  };
+}
+
+/* ---------- vue Stats ---------- */
+function viewStats() {
+  const v = $("#view");
+  const rs = S.rounds.filter(r => holesComplete(r) && courseById(r.courseId)).filter(r => statFilter === "all" || r.type === statFilter);
+  let html = `<h2>Statistiques</h2><div class="seg" id="segSt"><button data-v="all" aria-pressed="${statFilter === "all"}">Toutes</button><button data-v="comp" aria-pressed="${statFilter === "comp"}">Compétitions</button><button data-v="train" aria-pressed="${statFilter === "train"}">Entraînements</button></div>`;
+  if (!rs.length) html += `<div class="empty" style="margin-top:12px">Les statistiques s’appuient sur les parties saisies trou par trou. Aucune dans cette catégorie pour l’instant.</div>`;
+  else {
+    let gross = [], putts = [], nHoles = 0, fwHit = 0, fwTry = 0, gir = 0, girTry = 0, pen = 0, vsPar = { 3: [], 4: [], 5: [] };
+    rs.forEach(r => {
+      const c = courseById(r.courseId), idx = playedIdx(r);
+      if (!isNine(r)) {
+        gross.push(sum(r.holes.map(h => h.s)));
+        if (r.holes.every(h => h.p != null)) putts.push(sum(r.holes.map(h => h.p)));
+      }
+      nHoles += idx.length;
+      idx.forEach(i => { const h = r.holes[i];
+        const par = c.par[i];
+        if (par > 3 && h.f != null) { fwTry++; if (h.f === 1) fwHit++; }
+        if (h.p != null) { girTry++; if (h.s - h.p <= par - 2) gir++; }
+        pen += h.pen || 0;
+        if (vsPar[par]) vsPar[par].push(h.s - par);
+      });
+    });
+    const avg = a => a.length ? sum(a) / a.length : null;
+    const pct = (a, b) => b ? Math.round(a / b * 100) + " %" : "–";
+    const best = gross.length ? Math.min(...gross) : "–";
+    const st = (k, val) => `<div class="stat"><div class="v">${val}</div><div class="k">${k}</div></div>`;
+    html += `<div class="stats" style="margin-top:12px">
+      ${st("Parties", rs.length)}${st("Meilleur score brut (18 trous)", best)}
+      ${st("Score brut moyen (18 trous)", gross.length ? avg(gross).toFixed(1) : "–")}${st("Putts par partie (18 trous)", putts.length ? avg(putts).toFixed(1) : "–")}
+      ${st("Fairways touchés", pct(fwHit, fwTry))}${st("Greens en régulation", pct(gir, girTry))}
+      
+      ${st("Écart moyen au par", [3, 4, 5].map(p => vsPar[p].length ? `${p}: ${avg(vsPar[p]) >= 0 ? "+" : ""}${avg(vsPar[p]).toFixed(2)}` : "").filter(Boolean).join("<br>") || "–")}
+    </div>
+    <p class="small muted" style="margin-top:10px">Green en régulation : green atteint en (par − 2) coups ou moins, déduit des coups et des putts saisis. Fairways : considérés comme touchés, sauf si vous avez indiqué le contraire.</p>`;
+  }
+  v.innerHTML = html;
+  v.querySelectorAll("#segSt button").forEach(b => b.onclick = () => { statFilter = b.dataset.v; viewStats(); });
+}
+
+/* ---------- vue Réglages ---------- */
+function viewSettings() {
+  const v = $("#view");
+  v.innerHTML = `<h2>Réglages</h2>
+  <label class="f">Mon index officiel actuel (fédération)<input type="number" inputmode="decimal" step="0.1" id="sHI" value="${S.settings.officialHI ?? ""}" placeholder="Ex. 18.4"></label>
+  <p class="small muted">Sert uniquement à comparer avec l’index reconstitué à partir de vos compétitions.</p>
+  <button class="btn ghost" id="sHIsave" style="margin-top:8px">Enregistrer l’index</button>
+  <h2>Sauvegarde</h2>
+  <p class="small">Vos données sont enregistrées uniquement sur cet appareil. Elles ne sont pas synchronisées entre votre Mac et votre iPhone : pour passer de l’un à l’autre, exportez une sauvegarde puis importez-la sur l’autre appareil (par AirDrop ou iCloud Drive). Exportez aussi une sauvegarde régulièrement : en cas de perte de l’appareil ou d’effacement des données du navigateur, c’est votre seule copie.${lastExportTxt()}</p>
+  <div class="row wrap" style="margin-top:8px"><button class="btn ghost" id="sXls">Exporter en Excel</button><button class="btn ghost" id="sExp">Exporter une sauvegarde</button><label class="btn ghost" style="display:inline-block">Importer une sauvegarde<input type="file" id="sImp" accept="application/json,.json" hidden></label></div>
+  <p class="small muted" style="margin-top:8px">Le fichier Excel sert à consulter et analyser vos données. Pour sauvegarder et réimporter dans l’application, utilisez « Exporter une sauvegarde ».</p>
+  <div id="sMsg" class="small" role="status" style="margin-top:8px"></div>
+  <h2>Méthode de calcul</h2>
+  <details><summary>Comment l’index est calculé</summary>
+  <p class="small">L’application suit les Règles de handicap du World Handicap System (R&A et USGA, édition 2024), pour des parties de 18 trous.</p>
+  <p class="small"><b>Différentiel</b> : (113 ÷ Slope) × (score brut ajusté − Course Rating − PCC), arrondi au dixième.</p>
+  <p class="small"><b>Score brut ajusté</b> : chaque trou est plafonné à par + 5 tant qu’aucun index n’existe, puis au net double bogey (par + 2 + coups reçus sur le trou). Les coups reçus viennent du Course Handicap : index × Slope ÷ 113 + (Course Rating − par), arrondi à l’entier.</p>
+  <p class="small"><b>Index</b> : moyenne des 8 plus bas des 20 derniers différentiels, arrondie au dixième. Avec moins de 20 scores, la table officielle s’applique (3 scores : le plus bas − 2,0 ; 4 : le plus bas − 1,0 ; 5 : le plus bas ; 6 : moyenne des 2 plus bas − 1,0 ; 7–8 : 2 plus bas ; 9–11 : 3 ; 12–14 : 4 ; 15–16 : 5 ; 17–18 : 6 ; 19 : 7). Maximum 54,0.</p>
+  <p class="small"><b>Score exceptionnel</b> : différentiel inférieur de 7,0 à 9,9 coups à l’index → −1,0 sur les 20 derniers différentiels ; de 10,0 ou plus → −2,0.</p>
+  <p class="small"><b>Plafonds</b> (dès 20 scores) : au-delà de 3,0 au-dessus du Low Handicap Index, la hausse est réduite de moitié ; elle ne peut dépasser 5,0. Le Low Handicap Index est ici le plus bas index en vigueur sur les 365 jours précédant la partie.</p>
+  <p class="small"><b>Parties de 9 trous</b> : différentiel 9 trous = (113 ÷ Slope 9 trous) × (score ajusté − Course Rating 9 trous − 0,5 × PCC), auquel s’ajoute le score attendu sur 9 trous pour votre index au moment de la partie. La formule officielle du score attendu n’est pas publiée : l’application utilise l’approximation 0,52 × index + 1,2, qui reproduit l’exemple officiel de l’USGA (index 14,0 ; 7,2 + 8,5 = 15,7). Le résultat peut donc différer légèrement de celui de la fédération. Les parties de 9 trous sont ignorées tant qu’aucun index n’existe.</p>
+  <p class="small"><b>Limites</b> : le PCC n’est pas calculé par l’application (0 par défaut, à saisir si votre club l’indique). Les ajustements décidés par une commission de handicap et les règles propres à votre fédération ne sont pas pris en compte. L’index qui fait foi reste celui de votre fédération.</p>
+  </details>
+  <h2>Effacer</h2>
+  <button class="btn danger" id="sReset">Effacer toutes mes données</button>`;
+  $("#sHIsave").onclick = async () => {
+    const val = $("#sHI").value.trim();
+    S.settings.officialHI = val === "" ? null : Number(val);
+    await safe(() => Store.putSettings(), "Index enregistré");
+  };
+  $("#sExp").onclick = exportData;
+  $("#sXls").onclick = exportExcel;
+  $("#sImp").onchange = importData;
+  $("#sReset").onclick = async () => {
+    if (!confirm("Effacer tous les parcours, toutes les parties et les réglages ? Cette action est définitive.")) return;
+    const cs = S.courses.slice(), rs = S.rounds.slice();
+    S.courses = []; S.rounds = []; S.settings = { officialHI: null };
+    await safe(async () => {
+      if (Store.mode === "db") { for (const r of rs) await Store.del("rounds", r.id); for (const c of cs) await Store.del("courses", c.id); await Store.putSettings(); }
+      else Store.saveLocal();
+    }, "Données effacées");
+    route();
+  };
+}
+// Export Excel : SheetJS chargé à la demande depuis cdnjs
+function loadXLSX() {
+  return new Promise((ok, ko) => {
+    if (window.XLSX) return ok(window.XLSX);
+    const sc = document.createElement("script");
+    sc.src = "https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js";
+    sc.onload = () => window.XLSX ? ok(window.XLSX) : ko(new Error("xlsx"));
+    sc.onerror = () => ko(new Error("xlsx"));
+    document.head.appendChild(sc);
+  });
+}
+async function exportExcel() {
+  const msg = $("#sMsg");
+  let X;
+  try { msg.textContent = "Préparation du fichier Excel…"; X = await loadXLSX(); }
+  catch (e) { msg.textContent = "Le module Excel n’a pas pu être chargé. Vérifiez la connexion et réessayez."; return; }
+  const mapOf = res => { const m = {}; res.points.forEach(p => m[p.round.id] = p); return m; };
+  const mAll = mapOf(computeSeries(() => true)), mOff = mapOf(computeSeries(r => r.type === "comp")), mTr = mapOf(computeSeries(r => r.type === "train"));
+  const d = iso => iso ? new Date(iso + "T00:00:00") : "";
+  const cat = r => r.type === "comp" ? "Compétition" : "Entraînement";
+  const trousLbl = r => isNine(r) ? (r.nine === "front" ? "Aller 1–9" : "Retour 10–18") : "18";
+  const rounds = S.rounds.slice().sort((a, b) => a.date.localeCompare(b.date));
+  const parties = rounds.map(r => {
+    const c = courseById(r.courseId), pa = mAll[r.id], po = (r.type === "comp" ? mOff : mTr)[r.id] || pa;
+    const idx = playedIdx(r), hasP = holesComplete(r) && idx.every(i => r.holes[i].p != null);
+    return {
+      "Date": d(r.date), "Parcours": c ? c.name : "", "Départ": c ? c.tee || "" : "", "Catégorie": cat(r), "Trous": trousLbl(r),
+      "Score brut": grossOf(r) ?? "", "Putts": hasP ? sum(idx.map(i => r.holes[i].p)) : "",
+      "Points Stableford": c && holesComplete(r) ? sum(idx.map(i => ptsFor(c, r.nine, i, r.holes[i].s))) : "",
+      "Score brut ajusté": po && po.ags != null ? po.ags : "", "Différentiel": po && po.diff != null ? po.diff : "",
+      "Index officiel après": r.type === "comp" && mOff[r.id] && mOff[r.id].hiAfter != null ? mOff[r.id].hiAfter : "",
+      "Index hypothétique après": pa && pa.hiAfter != null ? pa.hiAfter : "",
+      "Index entraînement après": r.type === "train" && mTr[r.id] && mTr[r.id].hiAfter != null ? mTr[r.id].hiAfter : "",
+      "Note": r.note || ""
+    };
+  });
+  const trous = [];
+  rounds.forEach(r => {
+    const c = courseById(r.courseId); if (!c || !holesComplete(r)) return;
+    playedIdx(r).forEach(i => {
+      const h = r.holes[i], par = c.par[i];
+      trous.push({
+        "Date": d(r.date), "Parcours": c.name, "Départ": c.tee || "", "Catégorie": cat(r), "Trou": i + 1, "Par": par, "Index du trou": c.si[i],
+        "Coups jusqu’au green": gOf(h), "Putts": h.p ?? "", "Score": h.s, "Écart au par": h.s - par, "Points Stableford": ptsFor(c, r.nine, i, h.s),
+        "Fairway": par > 3 ? (h.f === 0 ? "Manqué" : "Touché") : "",
+        "Green en régulation": h.p != null ? (h.s - h.p <= par - 2 ? "Oui" : "Non") : ""
+      });
+    });
+  });
+  const parcours = S.courses.map(c => ({
+    "Parcours": c.name, "Départ": c.tee || "", "Course Rating": c.cr, "Slope": c.slope, "Par": sum(c.par),
+    "CR aller": c.r9 && c.r9.front ? c.r9.front.cr : "", "Slope aller": c.r9 && c.r9.front ? c.r9.front.slope : "",
+    "CR retour": c.r9 && c.r9.back ? c.r9.back.cr : "", "Slope retour": c.r9 && c.r9.back ? c.r9.back.slope : ""
+  }));
+  const wb = X.utils.book_new();
+  const add = (rows, name, empty) => {
+    const ws = rows.length ? X.utils.json_to_sheet(rows, { dateNF: "dd/mm/yyyy" }) : X.utils.aoa_to_sheet([[empty]]);
+    if (rows.length) ws["!cols"] = Object.keys(rows[0]).map(k => ({ wch: Math.max(11, k.length + 2) }));
+    X.utils.book_append_sheet(wb, ws, name);
+  };
+  add(parties, "Parties", "Aucune partie");
+  add(trous, "Trous", "Aucune partie saisie trou par trou");
+  add(parcours, "Parcours", "Aucun parcours");
+  const data = new Uint8Array(X.write(wb, { bookType: "xlsx", type: "array" }));
+  try {
+    const res = await saveFile(`carnet-golf-${todayISO()}.xlsx`, new Blob([data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }));
+    msg.textContent = res === "ok" ? "Fichier Excel exporté." : "Export annulé.";
+  } catch (e) { msg.textContent = "L’export n’a pas abouti. Réessayez."; }
+}
+async function saveFile(name, blob) {
+  const file = new File([blob], name, { type: blob.type });
+  if (navigator.canShare && navigator.canShare({ files: [file] })) {
+    try { await navigator.share({ files: [file], title: name }); return "ok"; }
+    catch (e) { if (e && e.name === "AbortError") return "cancel"; }
+  }
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click();
+  setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 2000);
+  return "ok";
+}
+function noteExport() { try { localStorage.setItem(LKEY + "-last-export", new Date().toISOString()); } catch (e) {} }
+async function exportData() {
+  const data = JSON.stringify({ app: "carnet-golf", version: 1, exported: new Date().toISOString(), ...S }, null, 2);
+  const msg = $("#sMsg");
+  try {
+    const res = await saveFile(`carnet-golf-${todayISO()}.json`, new Blob([data], { type: "application/json" }));
+    if (res === "ok") { noteExport(); msg.textContent = "Sauvegarde exportée."; } else msg.textContent = "Export annulé.";
+  } catch (e) { msg.textContent = "L’export n’a pas abouti. Réessayez."; }
+}
+async function importData(e) {
+  const f = e.target.files[0], msg = $("#sMsg"); if (!f) return;
+  try {
+    const d = JSON.parse(await f.text());
+    if (!d || !Array.isArray(d.courses) || !Array.isArray(d.rounds)) throw new Error("format");
+    let nc = 0, nr = 0;
+    for (const c of d.courses) { if (!c.id) continue; const i = S.courses.findIndex(x => x.id === c.id); if (i >= 0) S.courses[i] = c; else S.courses.push(c); nc++; }
+    for (const r of d.rounds) { if (!r.id) continue; const i = S.rounds.findIndex(x => x.id === r.id); if (i >= 0) S.rounds[i] = r; else S.rounds.push(r); nr++; }
+    if (d.settings) S.settings = Object.assign({ officialHI: null }, d.settings);
+    await safe(async () => {
+      if (Store.mode === "db") { for (const c of d.courses) if (c.id) await Store.put("courses", c); for (const r of d.rounds) if (r.id) await Store.put("rounds", r); await Store.putSettings(); }
+      else Store.saveLocal();
+    });
+    msg.textContent = `Import terminé : ${nc} parcours et ${nr} parties.`;
+  } catch (err) { msg.textContent = "Ce fichier n’est pas une sauvegarde du carnet de golf."; }
+  e.target.value = "";
+}
+
+function lastExportTxt() {
+  let d = null; try { d = localStorage.getItem(LKEY + "-last-export"); } catch (e) {}
+  if (!d) return " <b>Aucune sauvegarde exportée depuis cet appareil.</b>";
+  const days = Math.floor((Date.now() - new Date(d).getTime()) / 86400000);
+  return ` Dernière sauvegarde exportée : ${fmtDate(d.slice(0, 10))}${days > 30 ? " — <b>pensez à en refaire une</b>" : ""}.`;
+}
+/* ---------- démarrage ---------- */
+route();
+Store.init().then(() => { setSync(); route(); });
+if ("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(() => {}));
+</script>
+</body>
+</html>
